@@ -22,10 +22,9 @@
             android:layout_marginEnd="16dp"
             android:hint="To"
             android:textColorHint="@color/light_gray"
-            app:boxBackgroundColor="@color/box_background"
             app:boxBackgroundMode="outline"
             app:boxStrokeColor="@color/light_gray"
-            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidth="2dp"
             app:errorEnabled="false"
             app:hintTextColor="@color/light_gray"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +34,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
+                android:inputType="phone"
                 android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -50,10 +49,9 @@
             android:layout_marginEnd="16dp"
             android:hint="Message"
             android:textColorHint="@color/light_gray"
-            app:boxBackgroundColor="@color/box_background"
             app:boxBackgroundMode="outline"
             app:boxStrokeColor="@color/light_gray"
-            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidth="2dp"
             app:errorEnabled="false"
             app:hintTextColor="@color/light_gray"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +61,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
+                android:inputType="textCapSentences"
                 android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,10 +77,9 @@
             android:layout_marginEnd="16dp"
             android:hint="How Many Times?"
             android:textColorHint="@color/light_gray"
-            app:boxBackgroundColor="@color/box_background"
             app:boxBackgroundMode="outline"
             app:boxStrokeColor="@color/light_gray"
-            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidth="2dp"
             app:errorEnabled="false"
             app:hintTextColor="@color/light_gray"
             app:layout_constraintEnd_toEndOf="parent"
@@ -92,18 +89,20 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
+                android:inputType="number"
                 android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageView
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:src="@drawable/ic_toggle"
-            app:layout_constraintStart_toStartOf="@+id/smsCount"
-            app:layout_constraintTop_toBottomOf="@+id/smsCount" />
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:shadowColor="@color/light_gray"
+            app:layout_constraintBottom_toBottomOf="@+id/textView2"
+            app:layout_constraintStart_toEndOf="@+id/textView2"
+            app:layout_constraintTop_toTopOf="@+id/textView2" />
 
         <TextView
             android:id="@+id/textView"
@@ -111,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:text="SIM 1"
+            android:text="SIM 2"
             android:textColor="@color/light_gray"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
@@ -153,6 +152,17 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/button"
             app:layout_constraintTop_toTopOf="@+id/button" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="SIM 1"
+            android:textColor="@color/light_gray"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/smsCount"
+            app:layout_constraintTop_toBottomOf="@+id/smsCount" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
