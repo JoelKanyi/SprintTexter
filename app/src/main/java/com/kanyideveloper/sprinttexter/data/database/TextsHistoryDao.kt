@@ -1,4 +1,4 @@
-package com.kanyideveloper.sprinttexter.data
+package com.kanyideveloper.sprinttexter.data.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -12,6 +12,6 @@ interface TextsHistoryDao {
     suspend fun insert(textsHistory: TextsHistory)
 
     @Query("SELECT * FROM history_table")
-    suspend fun getAllHistory() : LiveData<List<TextsHistory>>
+    fun getAllHistory() : LiveData<List<TextsHistory>>
 
 }

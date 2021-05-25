@@ -1,4 +1,4 @@
-package com.kanyideveloper.sprinttexter.data
+package com.kanyideveloper.sprinttexter.data.database
 
 import android.content.Context
 import androidx.room.Database

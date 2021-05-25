@@ -1,4 +1,10 @@
 package com.kanyideveloper.sprinttexter.ui.fragments.history
 
-class HistoryViewModel {
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.kanyideveloper.sprinttexter.data.database.TextsHistoryDao
+
+class HistoryViewModel(historyDao: TextsHistoryDao, application: Application) :
+    AndroidViewModel(application) {
+    val history = historyDao.getAllHistory()
 }
