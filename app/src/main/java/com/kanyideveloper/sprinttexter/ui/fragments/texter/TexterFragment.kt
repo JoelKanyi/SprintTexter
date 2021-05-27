@@ -8,181 +8,53 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.telephony.SmsManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.kanyideveloper.sprinttexter.databinding.FragmentTexterBinding
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
+import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
+import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
+import timber.log.Timber
 
 
 class TexterFragment : Fragment() {
 
-    private val TAG = "TexterFragment"
-
+    private val smsSentReceiver by lazy { SmsSentBroadcastReciever() }
+    private val smsDeliveredBroadcastReceiver by lazy { SmsDeliveredBroadcastReceiver() }
     private lateinit var binding: FragmentTexterBinding
+    private val application by lazy { requireNotNull(this.activity).application }
+    private val viewModelFactory by lazy { TexterViewModelFactory(application, smsSentReceiver, smsDeliveredBroadcastReceiver) }
+    private val viewModel by lazy { ViewModelProvider(this, viewModelFactory).get(TexterViewModel::class.java) }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentTexterBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        val sentPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_SENT_ACTION"), 0)
+        val deliveredPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_DELIVERED_ACTION"), 0)
+
+
         binding.buttonSend.setOnClickListener {
-            sendSMS("+254706003891","Please work",10)
+
+            if (binding.smsCount.editText.toString().trim().isEmpty()){
+                binding.smsCount.editText?.error = "Require an SMS count"
+            }
+            if (binding.message.editText.toString().trim().isEmpty()){
+                binding.message.editText?.error = "Require a message"
+            }
+            if (binding.smsToWho.editText.toString().trim().isEmpty()){
+                binding.smsToWho.editText?.error = "Require destination"
+            }
+
+            viewModel.sendSms(2,
+            binding.smsToWho.editText.toString().trim(),
+            binding.message.editText.toString().trim(),
+            sentPI,
+            deliveredPI)
         }
 
         return view
-    }
-
-
-    private fun sendSMS(phoneNumber: String, message: String, count: Int) {
-        if (count >= 501) {
-            return
-        }
-        Log.d(TAG, "sendSMS: send sms called")
-
-        val sentPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_SENT_ACTION"), 0)
-        val deliveredPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_DELIVERED_ACTION"), 0)
-        // ---when the SMS has been sent---
-        activity?.registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(arg0: Context?, arg1: Intent?) {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        Toast.makeText(context, "SMS sent", Toast.LENGTH_SHORT)
-                            .show()
-                        Log.d(TAG, "onReceive: sms sent")
-                    }
-                    SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {
-                        Toast.makeText(
-                            context,
-                            "Generic failure",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.d(TAG, "onReceive: generic failure")
-                    }
-                    SmsManager.RESULT_ERROR_NO_SERVICE -> {
-                        Toast.makeText(
-                            context,
-                            "No service",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.d(TAG, "onReceive:  no service")
-                    }
-                    SmsManager.RESULT_ERROR_NULL_PDU -> {
-                        Toast.makeText(
-                            context,
-                            "Null PDU",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.d(TAG, "onReceive:  null pdu")
-                    }
-                    SmsManager.RESULT_ERROR_RADIO_OFF -> {
-                        Toast.makeText(
-                            context,
-                            "Radio off",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.d(TAG, "onReceive:  radio off")
-                    }
-                }
-            }
-
-        }, IntentFilter("SMS_SENT_ACTION"))
-
-
-        activity?.registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(arg0: Context, arg1: Intent) {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        Toast.makeText(
-                            context, "SMS delivered",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        Log.d(TAG, "onReceive: sms delivered")
-                    }
-                    Activity.RESULT_CANCELED -> {
-                        Toast.makeText(
-                            context, "SMS not delivered",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        Log.d(TAG, "onReceive: sms not delivered")
-                    }
-                }
-            }
-        }, IntentFilter("SMS_DELIVERED_ACTION"))
-
-        /*val delaySeconds: Int = 3
-        SmsScheduler().sendSmsMessages(
-            phoneNumber,
-            message,
-            sentPI,
-            deliveredPI,
-            delaySeconds,
-            count
-        )*/
-        try {
-            sendSmss()
-        }catch (e: Exception){
-            Log.d(TAG, "sendSMS: ${e.message}")
-        }
-
-    }
-
-    private fun sendSmss(){
-        val sentPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_SENT_ACTION"), 0)
-        val deliveredPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_DELIVERED_ACTION"), 0)
-        
-        try {
-            for(i in 0..5){
-                Thread.sleep(1000)
-                val sms = SmsManager.getDefault()
-                sms.sendTextMessage(
-                    "+254704108976",
-                    null,
-                    "text",
-                    sentPI,
-                    deliveredPI
-                )
-            } 
-        }catch (e: Exception){
-            Log.d(TAG, "sendSmss: ${e.message}")
-        }
-    }
-
-
-    private class SmsScheduler {
-        fun sendSmsMessages(
-            phoneNumber: String?,
-            message: String?,
-            sentIntent: PendingIntent?,
-            deliveredIntent: PendingIntent?,
-            count: Int,
-            delaySeconds: Int
-        ): ScheduledExecutorService { val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
-            val sms = SmsManager.getDefault()
-
-            // Create the task that will send a SMS message
-            val sender = Runnable {
-                sms.sendTextMessage(
-                    phoneNumber,
-                    null,
-                    "text",
-                    sentIntent,
-                    deliveredIntent
-                )
-            }
-
-            // Schedule the messages to be sent at intervals of delaySeconds.for (i in 0 until count) {
-                scheduler.schedule(sender, (delaySeconds * 1).toLong(), TimeUnit.SECONDS)
-           // }
-            return scheduler
-        }
     }
 }
