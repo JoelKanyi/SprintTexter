@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.content.IntentFilter
 import android.telephony.SmsManager
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
 import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
 import timber.log.Timber
@@ -18,6 +20,11 @@ class TexterViewModel(
 
     private val mApplication: Application
 
+    private val _smsCount = smsSentBroadcastReciever.smssCount
+
+    val smsCount : LiveData<Int>
+        get() = _smsCount
+
     init {
         IntentFilter("SMS_SENT_ACTION").also {
             application.registerReceiver(smsSentBroadcastReciever, it)
@@ -28,7 +35,10 @@ class TexterViewModel(
         }
 
         mApplication = application
+    }
 
+    fun doneCounting(){
+        _smsCount.value = 0
     }
 
     fun sendSms(

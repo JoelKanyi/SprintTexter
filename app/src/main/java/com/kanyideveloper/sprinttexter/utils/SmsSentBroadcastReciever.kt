@@ -5,13 +5,18 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.telephony.SmsManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import timber.log.Timber
 
 class SmsSentBroadcastReciever() : BroadcastReceiver(){
+
+    var smssCount = MutableLiveData<Int>(0)
     override fun onReceive(context: Context?, intent: Intent?) {
         when (resultCode) {
             Activity.RESULT_OK -> {
-                Timber.d("onReceive: sms sent")
+                smssCount.value = smssCount.value!!.plus(1)
+                Timber.d("onReceive: sms sent $smssCount")
             }
             SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {
                 Timber.d("onReceive: generic failure")
