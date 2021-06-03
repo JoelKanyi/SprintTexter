@@ -16,7 +16,7 @@ class SmsSentBroadcastReciever() : BroadcastReceiver(){
         when (resultCode) {
             Activity.RESULT_OK -> {
                 smssCount.value = smssCount.value!!.plus(1)
-                Timber.d("onReceive: sms sent $smssCount")
+                Timber.d("onReceive: sms sent ${smssCount.value.toString()}")
             }
             SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {
                 Timber.d("onReceive: generic failure")

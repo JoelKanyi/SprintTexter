@@ -75,4 +75,9 @@ dependencies {
     //Hilt
     implementation "com.google.dagger:hilt-android:2.35.1"
     kapt "com.google.dagger:hilt-android-compiler:2.35.1"
+
+    //Percentage Chart
+    implementation 'com.ramijemli.percentagechartview:percentagechartview:0.3.1'
+
+    implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
 }

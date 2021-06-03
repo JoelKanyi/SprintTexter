@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:hint="Message"
             android:textColorHint="@color/light_gray"
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:hint="How Many Times?"
             android:textColorHint="@color/light_gray"
@@ -123,7 +123,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:backgroundTint="#1F5EFF"
@@ -157,29 +157,40 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="SIM 1"
             android:textColor="@color/light_gray"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/smsCount"
             app:layout_constraintTop_toBottomOf="@+id/smsCount" />
 
-
         <TextView
-            android:id="@+id/count"
+            android:id="@+id/textView254"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
-            android:text="0"
+            android:layout_marginTop="16dp"
+            android:text="1"
+            android:textSize="40sp"
             android:textColor="@color/light_gray"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/smsCount"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonCancel" />
 
 
+
+        <!--<com.mikhaellopez.circularprogressbar.CircularProgressBar
+            android:id="@+id/percentageChart"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonCancel"
+            app:cpb_progressbar_color ="#9C27B0"
+            app:cpb_background_progressbar_width ="10dp" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
