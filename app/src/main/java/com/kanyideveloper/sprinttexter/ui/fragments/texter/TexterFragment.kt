@@ -74,12 +74,11 @@ class TexterFragment : Fragment() {
                         binding.smsToWho.editText!!.text.toString().trim(),
                         binding.message.editText!!.text.toString().trim(),
                         sentPI, deliveredPI)
-                    //viewModel.startTimer()
                 }
             }
         }
 
-        viewModel.seconds().observe(viewLifecycleOwner, Observer {
+        viewModel.forCounter().observe(viewLifecycleOwner, Observer {
 //            if (binding.smsCount.editText!!.text.toString() == ""){
 //                return@Observer
 //            }else{
@@ -93,8 +92,8 @@ class TexterFragment : Fragment() {
 //                binding.textView254.text = "$counterValue Sent"
 //            }
 
-            Timber.d("Counter value = $it")
-            Toast.makeText(activity?.applicationContext, it.toString(), Toast.LENGTH_SHORT).show()
+            //Timber.d("Counter value = $it")
+
             binding.textView254.text = it.toString()
         })
 
