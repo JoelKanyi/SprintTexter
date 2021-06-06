@@ -14,7 +14,12 @@ import androidx.lifecycle.lifecycleScope
 import com.kanyideveloper.sprinttexter.databinding.FragmentTexterBinding
 import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
 import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.coroutines.coroutineContext
 
 
 class TexterFragment : Fragment() {
@@ -69,16 +74,18 @@ class TexterFragment : Fragment() {
                     Toast.makeText(requireContext(), "Please input a correct number", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }else{
-                    viewModel.sendSms(
-                        binding.smsCount.editText!!.text.toString().toInt(),
-                        binding.smsToWho.editText!!.text.toString().trim(),
-                        binding.message.editText!!.text.toString().trim(),
-                        sentPI, deliveredPI)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        viewModel.sendSms(
+                            binding.smsCount.editText!!.text.toString().toInt(),
+                            binding.smsToWho.editText!!.text.toString().trim(),
+                            binding.message.editText!!.text.toString().trim(),
+                            sentPI, deliveredPI)
+                    }
                 }
             }
         }
 
-        viewModel.forCounter().observe(viewLifecycleOwner, Observer {
+        viewModel.smsCount.observe(viewLifecycleOwner, Observer {
 //            if (binding.smsCount.editText!!.text.toString() == ""){
 //                return@Observer
 //            }else{
@@ -92,9 +99,10 @@ class TexterFragment : Fragment() {
 //                binding.textView254.text = "$counterValue Sent"
 //            }
 
-            //Timber.d("Counter value = $it")
+            Timber.d("Counter value = $it")
 
             binding.textView254.text = it.toString()
+            Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_SHORT).show()
         })
 
         return view

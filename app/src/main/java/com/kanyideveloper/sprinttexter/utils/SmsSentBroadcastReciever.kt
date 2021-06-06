@@ -7,6 +7,9 @@ import android.content.Intent
 import android.telephony.SmsManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SmsSentBroadcastReciever() : BroadcastReceiver(){
@@ -15,8 +18,9 @@ class SmsSentBroadcastReciever() : BroadcastReceiver(){
     override fun onReceive(context: Context?, intent: Intent?) {
         when (resultCode) {
             Activity.RESULT_OK -> {
-                smssCount.value = smssCount.value!!.plus(1)
-                Timber.d("onReceive: sms sent ${smssCount.value.toString()}")
+                CoroutineScope(Dispatchers.Main).launch {
+                    smssCount.value = smssCount.value!!.plus(1)
+                }
             }
             SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {
                 Timber.d("onReceive: generic failure")
