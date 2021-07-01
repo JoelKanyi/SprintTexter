@@ -6,22 +6,20 @@ import android.content.IntentFilter
 import android.telephony.SmsManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
 import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TexterViewModel(
-    application: Application,
-    private val smsSentBroadcastReciever: SmsSentBroadcastReciever,
-    private val smsDeliveredBroadcastReceiver: SmsDeliveredBroadcastReceiver
-) : AndroidViewModel(application) {
+class TexterViewModel(application: Application, private val smsSentBroadcastReciever: SmsSentBroadcastReciever, private val smsDeliveredBroadcastReceiver: SmsDeliveredBroadcastReceiver) : AndroidViewModel(application) {
 
     private val mApplication: Application
 
-    val smsCount: LiveData<Int>
+    val smsCount: MutableLiveData<Int>
         get() = smsSentBroadcastReciever.smssCount
 
     init {
@@ -32,21 +30,12 @@ class TexterViewModel(
         IntentFilter("SMS_DELIVERED_ACTION").also {
             application.registerReceiver(smsDeliveredBroadcastReceiver, it)
         }
-
         mApplication = application
     }
-
     fun doneCounting() {
         smsSentBroadcastReciever.smssCount.value = 0
     }
-
-    suspend fun sendSms(
-        count: Int,
-        phoneNumber: String,
-        message: String,
-        sentPI: PendingIntent,
-        deliveredPI: PendingIntent
-    ) {
+    suspend fun sendSms(count: Int, phoneNumber: String, message: String, sentPI: PendingIntent, deliveredPI: PendingIntent) {
         if (count > 501) {
             return
         }
@@ -57,15 +46,14 @@ class TexterViewModel(
                     val sms = SmsManager.getDefault()
                     sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI)
                 }
-
             }
         } catch (e: Exception) {
             Timber.d("sendSmss: ${e.message}")
         }
     }
-
     override fun onCleared() {
         super.onCleared()
+        Timber.d("onCleared")
         mApplication.unregisterReceiver(smsSentBroadcastReciever)
         mApplication.unregisterReceiver(smsDeliveredBroadcastReceiver)
     }

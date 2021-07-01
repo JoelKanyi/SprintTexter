@@ -10,16 +10,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.kanyideveloper.sprinttexter.databinding.FragmentTexterBinding
 import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
 import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.coroutines.coroutineContext
 
 
 class TexterFragment : Fragment() {
@@ -29,8 +26,17 @@ class TexterFragment : Fragment() {
     private lateinit var binding: FragmentTexterBinding
     private lateinit var viewModelFactory: TexterViewModelFactory
     private lateinit var viewModel: TexterViewModel
+    private var total = 0
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Timber.d("onCreate")
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.d("onDestroy")
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentTexterBinding.inflate(inflater, container, false)
@@ -38,19 +44,13 @@ class TexterFragment : Fragment() {
 
         val application = requireNotNull(this.activity).application
 
-        viewModelFactory = TexterViewModelFactory(
-                application,
-                smsSentReceiver,
-                smsDeliveredBroadcastReceiver
-            )
+        viewModelFactory = TexterViewModelFactory(application, smsSentReceiver, smsDeliveredBroadcastReceiver)
 
-       viewModel = ViewModelProvider(
-                this,
-                viewModelFactory
-            ).get(TexterViewModel::class.java)
+       viewModel = ViewModelProvider(this, viewModelFactory).get(TexterViewModel::class.java)
 
 
        // binding.percentageChart.setProgress(0f, true)
+
 
         val sentPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_SENT_ACTION"), 0)
         val deliveredPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_DELIVERED_ACTION"), 0)
@@ -70,6 +70,8 @@ class TexterFragment : Fragment() {
                 binding.smsToWho.editText?.error = "Require destination"
             }else{
 
+                total = binding.smsCount.editText!!.text.toString().toInt()
+
                 if (checkIfPhoneNumberOrCompanyNumber(binding.smsToWho.editText!!.text.toString()) == null){
                     Toast.makeText(requireContext(), "Please input a correct number", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
@@ -85,24 +87,20 @@ class TexterFragment : Fragment() {
             }
         }
 
-        viewModel.smsCount.observe(viewLifecycleOwner, Observer {
-//            if (binding.smsCount.editText!!.text.toString() == ""){
-//                return@Observer
-//            }else{
-//                Timber.d(counterValue.toString())
-//                val total = binding.smsCount.editText!!.text.toString().toInt()
-//               /* binding.percentageChart.apply {
-//                    progressMax = 100f
-//                    setProgressWithAnimation(counterValue.toFloat(), 2000)
-//                    progressBarWidth = 15f
-//                }*/
-//                binding.textView254.text = "$counterValue Sent"
-//            }
 
-            Timber.d("Counter value = $it")
+        viewModel.smsCount.observe(viewLifecycleOwner, Observer {counterValue ->
+            if (binding.smsCount.editText!!.text.toString() == ""){
+                return@Observer
+            }else {
+               /* binding.progress_circular.apply {
+                    progressMax = 100f
+                    setProgressWithAnimation(counterValue.toFloat(), 2000)
+                    progressBarWidth = 15f
+                }*/
 
-            binding.textView254.text = it.toString()
-            Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_SHORT).show()
+                //Timber.d(((counterValue/5)*100).toString())
+                //Toast.makeText(requireContext(), (counterValue + 2).toString(), Toast.LENGTH_SHORT).show()
+            }
         })
 
         return view
@@ -138,9 +136,5 @@ class TexterFragment : Fragment() {
         }
 
         return trimmedNumber
-    }
-
-    private fun getPercentage(num: Int, total: Int) : Float{
-        return ((num/total)*100).toFloat()
     }
 }
