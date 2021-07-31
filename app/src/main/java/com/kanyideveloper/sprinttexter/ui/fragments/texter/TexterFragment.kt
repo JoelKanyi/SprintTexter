@@ -31,6 +31,7 @@ class TexterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("onCreate")
+
     }
 
     override fun onDestroy() {
@@ -41,6 +42,8 @@ class TexterFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentTexterBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        requireActivity().actionBar?.show()
 
         val application = requireNotNull(this.activity).application
 

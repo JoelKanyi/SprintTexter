@@ -17,6 +17,11 @@
 
     </style>
 
+    <style name="splashScreen" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="android:windowBackground">@drawable/splash_image</item>
+        <item name="android:statusBarColor" tools:ignore="NewApi">@color/main</item>
+    </style>
+
     <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_menu_</item>
     </style>
