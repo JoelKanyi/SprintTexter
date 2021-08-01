@@ -2,6 +2,7 @@ package com.kanyideveloper.sprinttexter.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
 
 @Entity(tableName = "history_table")
 class TextsHistory(
@@ -10,5 +11,6 @@ class TextsHistory(
     val sentText: String,
     val phoneNumber: String,
     val simCard: String,
+    val smsCount: Int,
     val date: String
 )

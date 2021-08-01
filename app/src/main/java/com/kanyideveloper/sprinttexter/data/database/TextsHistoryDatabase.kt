@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [TextsHistory::class], version = 1)
+@Database(entities = [TextsHistory::class], version = 4, exportSchema = false)
 abstract class TextsHistoryDatabase : RoomDatabase() {
 
     abstract val textsHistoryDao: TextsHistoryDao

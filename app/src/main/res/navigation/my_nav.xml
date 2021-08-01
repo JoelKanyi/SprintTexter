@@ -9,7 +9,11 @@
         android:id="@+id/texterFragment"
         android:name="com.kanyideveloper.sprinttexter.ui.fragments.texter.TexterFragment"
         android:label="fragment_texter"
-        tools:layout="@layout/fragment_texter" />
+        tools:layout="@layout/fragment_texter" >
+        <action
+            android:id="@+id/action_texterFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
+    </fragment>
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.kanyideveloper.sprinttexter.ui.fragments.history.HistoryFragment"

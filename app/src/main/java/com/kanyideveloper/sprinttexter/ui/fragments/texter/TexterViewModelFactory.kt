@@ -12,11 +12,12 @@ import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
 class TexterViewModelFactory(
     private val application: Application,
     private val smsSentBroadcastReciever: SmsSentBroadcastReciever,
-    private val smsDeliveredBroadcastReceiver: SmsDeliveredBroadcastReceiver
+    private val smsDeliveredBroadcastReceiver: SmsDeliveredBroadcastReceiver,
+    private val textsHistoryDao: TextsHistoryDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TexterViewModel::class.java)) {
-            return TexterViewModel(application, smsSentBroadcastReciever, smsDeliveredBroadcastReceiver) as T
+            return TexterViewModel(application, smsSentBroadcastReciever, smsDeliveredBroadcastReceiver, textsHistoryDao) as T
         } else
             throw IllegalArgumentException("ViewModel class not found")
     }

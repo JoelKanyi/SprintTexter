@@ -8,21 +8,31 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.kanyideveloper.sprinttexter.data.database.TextsHistory
+import com.kanyideveloper.sprinttexter.data.database.TextsHistoryDao
 import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
 import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 
-class TexterViewModel(application: Application, private val smsSentBroadcastReciever: SmsSentBroadcastReciever, private val smsDeliveredBroadcastReceiver: SmsDeliveredBroadcastReceiver) : AndroidViewModel(application) {
+class TexterViewModel(
+    application: Application, private val smsSentBroadcastReciever: SmsSentBroadcastReciever,
+    private val smsDeliveredBroadcastReceiver: SmsDeliveredBroadcastReceiver,
+    private val textsHistoryDao: TextsHistoryDao
+) : AndroidViewModel(application) {
 
     private val mApplication: Application
+
+    private var mTextsHistoryDao: TextsHistoryDao
 
     val smsCount: MutableLiveData<Int>
         get() = smsSentBroadcastReciever.smssCount
 
     init {
+        Timber.d("Init Called")
+
         IntentFilter("SMS_SENT_ACTION").also {
             application.registerReceiver(smsSentBroadcastReciever, it)
         }
@@ -31,11 +41,35 @@ class TexterViewModel(application: Application, private val smsSentBroadcastReci
             application.registerReceiver(smsDeliveredBroadcastReceiver, it)
         }
         mApplication = application
+
+        mTextsHistoryDao = textsHistoryDao
     }
+
+
+    suspend fun saveToDb(text: String, totalSms: Int, phoneNumber: String, simCard: String) {
+
+        //Calculate Date
+        val date = Date()
+        viewModelScope.launch {
+            val textHistory = TextsHistory(0, text, phoneNumber, simCard, totalSms, date.year.toString())
+            mTextsHistoryDao.insert(textHistory)
+        }
+    }
+
+
     fun doneCounting() {
         smsSentBroadcastReciever.smssCount.value = 0
     }
-    suspend fun sendSms(count: Int, phoneNumber: String, message: String, sentPI: PendingIntent, deliveredPI: PendingIntent) {
+
+    suspend fun sendSms(
+        count: Int,
+        phoneNumber: String,
+        message: String,
+        sentPI: PendingIntent,
+        deliveredPI: PendingIntent
+    ) {
+
+        Timber.d("ViewModel: Sent sms method called")
         if (count > 501) {
             return
         }
@@ -48,13 +82,30 @@ class TexterViewModel(application: Application, private val smsSentBroadcastReci
                 }
             }
         } catch (e: Exception) {
-            Timber.d("sendSmss: ${e.message}")
+            Timber.d("sendSms: ${e.message}")
         }
     }
+
     override fun onCleared() {
         super.onCleared()
-        Timber.d("onCleared")
+        Timber.d("ViewModel onCleared")
         mApplication.unregisterReceiver(smsSentBroadcastReciever)
         mApplication.unregisterReceiver(smsDeliveredBroadcastReceiver)
     }
+
+
+
+    private val _save = MutableLiveData<Boolean>()
+    val save: LiveData<Boolean>
+        get() = _save
+
+
+    fun youCanNowSave(){
+        _save.value = true
+    }
+
+    fun doneSaving(){
+        _save.value = false
+    }
 }
+

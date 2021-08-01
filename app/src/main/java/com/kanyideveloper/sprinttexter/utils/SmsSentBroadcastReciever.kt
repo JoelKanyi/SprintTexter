@@ -20,6 +20,7 @@ class SmsSentBroadcastReciever() : BroadcastReceiver(){
             Activity.RESULT_OK -> {
                 CoroutineScope(Dispatchers.Main).launch {
                     smssCount.value = smssCount.value!!.plus(1)
+                    Timber.d("BroadcastReceiver SMS sent: ${smssCount.value}")
                 }
             }
             SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {

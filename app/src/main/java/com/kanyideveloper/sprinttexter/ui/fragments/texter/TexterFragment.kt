@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.kanyideveloper.sprinttexter.data.database.TextsHistoryDao
+import com.kanyideveloper.sprinttexter.data.database.TextsHistoryDatabase
 import com.kanyideveloper.sprinttexter.databinding.FragmentTexterBinding
 import com.kanyideveloper.sprinttexter.utils.SmsDeliveredBroadcastReceiver
 import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
@@ -26,34 +28,31 @@ class TexterFragment : Fragment() {
     private lateinit var binding: FragmentTexterBinding
     private lateinit var viewModelFactory: TexterViewModelFactory
     private lateinit var viewModel: TexterViewModel
-    private var total = 0
+    private lateinit var textsHistoryDao: TextsHistoryDao
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Timber.d("onCreate")
+    private lateinit var textMessage: String
+    private lateinit var phoneNum: String
+    private val simCard: String = "SIM 1"
+    private var totalSms: Int = 0
 
-    }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.d("onDestroy")
-    }
+        Timber.d("onCreateView")
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentTexterBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        requireActivity().actionBar?.show()
-
         val application = requireNotNull(this.activity).application
 
-        viewModelFactory = TexterViewModelFactory(application, smsSentReceiver, smsDeliveredBroadcastReceiver)
+        textsHistoryDao = TextsHistoryDatabase.getInstance(application).textsHistoryDao
 
-       viewModel = ViewModelProvider(this, viewModelFactory).get(TexterViewModel::class.java)
-
-
-       // binding.percentageChart.setProgress(0f, true)
-
+        viewModelFactory =
+            TexterViewModelFactory(application, smsSentReceiver, smsDeliveredBroadcastReceiver, textsHistoryDao)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(TexterViewModel::class.java)
 
         val sentPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_SENT_ACTION"), 0)
         val deliveredPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_DELIVERED_ACTION"), 0)
@@ -61,7 +60,6 @@ class TexterFragment : Fragment() {
         binding.buttonSend.setOnClickListener {
 
             viewModel.doneCounting()
-           // binding.percentageChart.setProgress(0f, true)
 
             if (binding.smsCount.editText!!.text.toString().trim().isEmpty()) {
                 binding.smsCount.editText?.error = "Require an SMS count"
@@ -71,70 +69,80 @@ class TexterFragment : Fragment() {
             }
             if (binding.smsToWho.editText!!.text.toString().trim().isEmpty()) {
                 binding.smsToWho.editText?.error = "Require destination"
-            }else{
+            } else {
 
-                total = binding.smsCount.editText!!.text.toString().toInt()
-
-                if (checkIfPhoneNumberOrCompanyNumber(binding.smsToWho.editText!!.text.toString()) == null){
-                    Toast.makeText(requireContext(), "Please input a correct number", Toast.LENGTH_SHORT).show()
+                if (checkIfPhoneNumberOrCompanyNumber(binding.smsToWho.editText!!.text.toString()) == null) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please input a correct number",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
-                }else{
+
+                } else {
+
+                    textMessage = binding.message.editText!!.text.toString().trim()
+                    phoneNum = binding.smsToWho.editText!!.text.toString().trim()
+                    totalSms = binding.smsCount.editText!!.text.toString().toInt()
+
                     CoroutineScope(Dispatchers.Main).launch {
+                        Timber.d("TexterFragment: Call sendSms in ViewModel")
                         viewModel.sendSms(
                             binding.smsCount.editText!!.text.toString().toInt(),
                             binding.smsToWho.editText!!.text.toString().trim(),
                             binding.message.editText!!.text.toString().trim(),
-                            sentPI, deliveredPI)
+                            sentPI, deliveredPI
+                        )
                     }
                 }
             }
         }
 
-
-        viewModel.smsCount.observe(viewLifecycleOwner, Observer {counterValue ->
-            if (binding.smsCount.editText!!.text.toString() == ""){
+        viewModel.smsCount.observe(viewLifecycleOwner, Observer { counterValue ->
+            if (binding.smsCount.editText!!.text.toString() == "") {
                 return@Observer
-            }else {
-               /* binding.progress_circular.apply {
-                    progressMax = 100f
-                    setProgressWithAnimation(counterValue.toFloat(), 2000)
-                    progressBarWidth = 15f
-                }*/
+            } else if (counterValue >= totalSms) {
+                viewModel.youCanNowSave()
+            } else {
+                binding.textView254.text = counterValue.toString()
+            }
+        })
 
-                //Timber.d(((counterValue/5)*100).toString())
-                //Toast.makeText(requireContext(), (counterValue + 2).toString(), Toast.LENGTH_SHORT).show()
+        viewModel.save.observe(viewLifecycleOwner, Observer {
+            CoroutineScope(Dispatchers.Main).launch {
+                viewModel.saveToDb(textMessage, totalSms, phoneNum, simCard)
+                viewModel.doneSaving()
             }
         })
 
         return view
     }
 
-    private fun checkIfPhoneNumberOrCompanyNumber(number: String): String?{
+    private fun checkIfPhoneNumberOrCompanyNumber(number: String): String? {
         // if the length is equal to 10 -> number
-            /*
-            slice the zero and concatenate with the country code
-            */
+        /*
+        slice the zero and concatenate with the country code
+        */
         //if length is equal 6 -> radio station number
-            /*
-            Proceeding the sending the message
-            */
+        /*
+        Proceeding the sending the message
+        */
         //Else wrong input
 
         //Handle instance when the input already has a +254
 
         var trimmedNumber: String? = null
 
-        if(number.length == 10){
-             trimmedNumber = number.replaceFirst("0", "+254")
-        }else if (number.length in 3..9){
+        if (number.length == 10) {
+            trimmedNumber = number.replaceFirst("0", "+254")
+        } else if (number.length in 3..9) {
             trimmedNumber = number
-        }else if(number.contains("+254")){
+        } else if (number.contains("+254")) {
             trimmedNumber = number
-        }else if(number.contains("254")){
+        } else if (number.contains("254")) {
             trimmedNumber = "+$number"
 
-        }
-        else{
+        } else {
             Timber.d("Wrong Input")
         }
 
