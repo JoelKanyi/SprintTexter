@@ -16,30 +16,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.my_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.about -> {
-                Toast.makeText(applicationContext, "About", Toast.LENGTH_SHORT).show()
-            }
-            R.id.history -> {
-                Toast.makeText(applicationContext, "History", Toast.LENGTH_SHORT).show()
-                Navigation.findNavController(this, R.id.fragmentContainerView).navigate(R.id.action_texterFragment_to_historyFragment)
-            }
-            R.id.feedback -> {
-                Toast.makeText(applicationContext, "Feedback", Toast.LENGTH_SHORT).show()
-            }
-            R.id.help -> {
-                Toast.makeText(applicationContext, "Help", Toast.LENGTH_SHORT).show()
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 }

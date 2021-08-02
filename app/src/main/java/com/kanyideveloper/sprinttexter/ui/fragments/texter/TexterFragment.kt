@@ -3,13 +3,13 @@ package com.kanyideveloper.sprinttexter.ui.fragments.texter
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import com.kanyideveloper.sprinttexter.R
 import com.kanyideveloper.sprinttexter.data.database.TextsHistoryDao
 import com.kanyideveloper.sprinttexter.data.database.TextsHistoryDatabase
 import com.kanyideveloper.sprinttexter.databinding.FragmentTexterBinding
@@ -42,6 +42,8 @@ class TexterFragment : Fragment() {
     ): View {
 
         Timber.d("onCreateView")
+
+        setHasOptionsMenu(true)
 
         binding = FragmentTexterBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -156,5 +158,32 @@ class TexterFragment : Fragment() {
         }
 
         return trimmedNumber
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.my_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.about -> {
+                Toast.makeText(requireContext(), "About", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(requireActivity(), R.id.fragmentContainerView).navigate(R.id.action_texterFragment_to_aboutFragment)
+            }
+            R.id.history -> {
+                Toast.makeText(requireContext(), "History", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(requireActivity(), R.id.fragmentContainerView).navigate(R.id.action_texterFragment_to_historyFragment)
+            }
+            R.id.feedback -> {
+                Toast.makeText(requireContext(), "Feedback", Toast.LENGTH_SHORT).show()
+            }
+            R.id.help -> {
+                Toast.makeText(requireContext(), "Help", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }
