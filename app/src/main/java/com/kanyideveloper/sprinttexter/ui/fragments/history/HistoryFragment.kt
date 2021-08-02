@@ -29,8 +29,7 @@ class HistoryFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         historyDao = TextsHistoryDatabase.getInstance(application).textsHistoryDao
         val historyViewModelFactory = HistoryViewModelFactory(historyDao, application)
-        viewModel =
-            ViewModelProvider(this, historyViewModelFactory).get(HistoryViewModel::class.java)
+        viewModel = ViewModelProvider(this, historyViewModelFactory).get(HistoryViewModel::class.java)
 
         viewModel.history.observe(viewLifecycleOwner, { historyList ->
             adapter.submitList(historyList)

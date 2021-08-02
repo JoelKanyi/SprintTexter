@@ -28,7 +28,7 @@ class HistoryAdapter : ListAdapter<TextsHistory, HistoryAdapter.MyViewHolder>(Di
         fun bind(history: TextsHistory?) {
             binding.historyDate.text = history?.date
             binding.historyContent.text =
-                "Texted ${history?.sentText} to ${history?.phoneNumber} from SIM ${history?.simCard}"
+                "Texted ${history?.smsCount}: ${history?.sentText} to ${history?.phoneNumber} from SIM ${history?.simCard}"
         }
 
     }

@@ -10,7 +10,5 @@ import kotlinx.coroutines.launch
 
 class HistoryViewModel(historyDao: TextsHistoryDao, application: Application) :
     AndroidViewModel(application) {
-
-
     val history = historyDao.getAllHistory()
 }

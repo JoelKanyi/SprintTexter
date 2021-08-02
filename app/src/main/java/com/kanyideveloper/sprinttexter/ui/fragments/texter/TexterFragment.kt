@@ -32,7 +32,7 @@ class TexterFragment : Fragment() {
 
     private lateinit var textMessage: String
     private lateinit var phoneNum: String
-    private val simCard: String = "SIM 1"
+    private val simCard: String = "1"
     private var totalSms: Int = 0
 
     override fun onCreateView(
@@ -51,7 +51,12 @@ class TexterFragment : Fragment() {
         textsHistoryDao = TextsHistoryDatabase.getInstance(application).textsHistoryDao
 
         viewModelFactory =
-            TexterViewModelFactory(application, smsSentReceiver, smsDeliveredBroadcastReceiver, textsHistoryDao)
+            TexterViewModelFactory(
+                application,
+                smsSentReceiver,
+                smsDeliveredBroadcastReceiver,
+                textsHistoryDao
+            )
         viewModel = ViewModelProvider(this, viewModelFactory).get(TexterViewModel::class.java)
 
         val sentPI = PendingIntent.getBroadcast(activity, 0, Intent("SMS_SENT_ACTION"), 0)
@@ -101,17 +106,21 @@ class TexterFragment : Fragment() {
         viewModel.smsCount.observe(viewLifecycleOwner, Observer { counterValue ->
             if (binding.smsCount.editText!!.text.toString() == "") {
                 return@Observer
-            } else if (counterValue >= totalSms) {
+            }else if(totalSms == (counterValue + 1)){
                 viewModel.youCanNowSave()
-            } else {
+            }
+
+            else {
                 binding.textView254.text = counterValue.toString()
             }
         })
 
         viewModel.save.observe(viewLifecycleOwner, Observer {
-            CoroutineScope(Dispatchers.Main).launch {
-                viewModel.saveToDb(textMessage, totalSms, phoneNum, simCard)
-                viewModel.doneSaving()
+            if (it){
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.saveToDb(textMessage, totalSms, phoneNum, simCard)
+                    viewModel.doneSaving()
+                }
             }
         })
 

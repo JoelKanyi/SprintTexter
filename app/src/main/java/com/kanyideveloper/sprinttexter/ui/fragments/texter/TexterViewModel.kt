@@ -15,6 +15,7 @@ import com.kanyideveloper.sprinttexter.utils.SmsSentBroadcastReciever
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.text.SimpleDateFormat
 import java.util.*
 
 class TexterViewModel(
@@ -49,9 +50,10 @@ class TexterViewModel(
     suspend fun saveToDb(text: String, totalSms: Int, phoneNumber: String, simCard: String) {
 
         //Calculate Date
-        val date = Date()
+        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val  date = sdf.format(Date())
         viewModelScope.launch {
-            val textHistory = TextsHistory(0, text, phoneNumber, simCard, totalSms, date.year.toString())
+            val textHistory = TextsHistory(0, text, phoneNumber, simCard, totalSms, date.toString())
             mTextsHistoryDao.insert(textHistory)
         }
     }
