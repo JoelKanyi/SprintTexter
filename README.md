@@ -1,9 +1,11 @@
 <p align="center">
-
+  
 # Sprint Texter 🚀 🚀 🚀
 
 A simple app that sends SMSs after every one 1 second. I was inspired by those TV and Radio competitions in Kenya where people are asked a given question, then that person that will send alot of messages will emerge the winner 😂 😂.
-
+  
+# Note: App Under Massive refactor and construction ️ ⚒️ ⚒️ 🚧 🚧 
+  
 Min Api Level : 16 
 
 ## Setup Requirements
