@@ -37,9 +37,9 @@ Libraries used in the whole application are:
 
 ## Demo
 <p float="left">
-<img src="screenshots/Screenshot_20210510-163216.png" width=250/>
-<img src="screenshots/Screenshot_20210510-163216.png" width=250/>
-<img src="screenshots/Screenshot_20210510-163216.png" width=250/>
+<img src="screenshots/Screenshot_20211110-053122.png" width=250/>
+<img src="screenshots/Screenshot_20211110-052956.png" width=250/>
+<img src="screenshots/Screenshot_20211110-054649.png" width=250/>
   </p>
   
 ## Support
