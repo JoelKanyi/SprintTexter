@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -68,17 +69,17 @@ class TexterFragment : Fragment() {
 
             viewModel.doneCounting()
 
-            if (binding.smsCount.editText!!.text.toString().trim().isEmpty()) {
-                binding.smsCount.editText?.error = "Require an SMS count"
+            if (binding.smsCount.text.toString().trim().isEmpty()) {
+                binding.smsCount.error = "Require an SMS count"
             }
-            if (binding.message.editText!!.text.toString().trim().isEmpty()) {
-                binding.message.editText?.error = "Require a message"
+            if (binding.message.text.toString().trim().isEmpty()) {
+                binding.message.error = "Require a message"
             }
-            if (binding.smsToWho.editText!!.text.toString().trim().isEmpty()) {
-                binding.smsToWho.editText?.error = "Require destination"
+            if (binding.smsToWho.text.toString().trim().isEmpty()) {
+                binding.smsToWho.error = "Require destination"
             } else {
 
-                if (checkIfPhoneNumberOrCompanyNumber(binding.smsToWho.editText!!.text.toString()) == null) {
+                if (checkIfPhoneNumberOrCompanyNumber(binding.smsToWho.text.toString()) == null) {
                     Toast.makeText(
                         requireContext(),
                         "Please input a correct number",
@@ -88,16 +89,16 @@ class TexterFragment : Fragment() {
 
                 } else {
 
-                    textMessage = binding.message.editText!!.text.toString().trim()
-                    phoneNum = binding.smsToWho.editText!!.text.toString().trim()
-                    totalSms = binding.smsCount.editText!!.text.toString().toInt()
+                    textMessage = binding.message.text.toString().trim()
+                    phoneNum = binding.smsToWho.text.toString().trim()
+                    totalSms = binding.smsCount.text.toString().toInt()
 
                     CoroutineScope(Dispatchers.Main).launch {
                         Timber.d("TexterFragment: Call sendSms in ViewModel")
                         viewModel.sendSms(
-                            binding.smsCount.editText!!.text.toString().toInt(),
-                            binding.smsToWho.editText!!.text.toString().trim(),
-                            binding.message.editText!!.text.toString().trim(),
+                            binding.smsCount.text.toString().toInt(),
+                            binding.smsToWho.text.toString().trim(),
+                            binding.message.text.toString().trim(),
                             sentPI, deliveredPI
                         )
                     }
@@ -106,14 +107,18 @@ class TexterFragment : Fragment() {
         }
 
         viewModel.smsCount.observe(viewLifecycleOwner, Observer { counterValue ->
-            if (binding.smsCount.editText!!.text.toString() == "") {
+            if (binding.smsCount.text.toString() == "") {
                 return@Observer
             }else if(totalSms == (counterValue + 1)){
                 viewModel.youCanNowSave()
             }
 
             else {
+                binding.progressCircular.isVisible = true
                 binding.textView254.text = counterValue.toString()
+                if (binding.smsCount.toString() == counterValue.toString()){
+                    binding.progressCircular.isVisible = false
+                }
             }
         })
 
@@ -127,6 +132,10 @@ class TexterFragment : Fragment() {
         })
 
         return view
+    }
+
+    private fun disableProgressbar(){
+
     }
 
     private fun checkIfPhoneNumberOrCompanyNumber(number: String): String? {

@@ -78,7 +78,7 @@ class TexterViewModel(
         try {
             viewModelScope.launch {
                 for (i in 1..count) {
-                    delay(3000)
+                    delay(1000)
                     val sms = SmsManager.getDefault()
                     sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI)
                 }

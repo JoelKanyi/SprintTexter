@@ -15,7 +15,7 @@ interface TextsHistoryDao {
     @Query("SELECT * FROM history_table ORDER BY date DESC")
     fun getAllHistory(): LiveData<List<TextsHistory>>
 
-    @Query("DELETE * FROM history_table")
-    fun deleteAllHistory()
+/*    @Query("DELETE * FROM history_table")
+    fun deleteAllHistory()*/
 
 }
